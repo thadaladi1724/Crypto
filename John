@@ -1,0 +1,6 @@
+1. sudo apt install john -y
+2. touch hashes.txt
+3. nano hashes.txt          # paste hash
+4. cat hashes.txt
+5. john --format=raw-md5 --wordlist=/usr/share/wordlists/rockyou.txt hashes.txt
+6. john --show hashes.txt  # ← REQUIRED
