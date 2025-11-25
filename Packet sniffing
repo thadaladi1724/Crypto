@@ -1,0 +1,29 @@
+import socket
+import struct
+
+s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_IP)
+s.bind((socket.gethostbyname(socket.gethostname()), 0))
+s.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
+s.ioctl(socket.SIO_RCVALL, socket.RCVALL_ON)
+
+print("Windows Packet Sniffer ON - Capturing ALL traffic (Ctrl+C to stop)\n")
+print("Protocol     Source IP         → Destination IP        Info")
+
+while True:
+    data, _ = s.recvfrom(65535)
+    ip_header = data[0:20]
+    iph = struct.unpack('!BBHHHBBH4s4s', ip_header)
+    
+    version_ihl = iph[0]
+    ihl = version_ihl & 0xF
+    iph_len = ihl * 4
+    protocol = iph[6]
+    src = socket.inet_ntoa(iph[8])
+    dst = socket.inet_ntoa(iph[9])
+    
+    if protocol == 1:
+        print(f"ICMP         {src:15} → {dst:15}   Ping")
+    elif protocol == 6:
+        print(f"TCP          {src:15} → {dst:15}   Web/Apps")
+    elif protocol == 17:
+        print(f"UDP/DNS      {src:15} → {dst:15}   DNS/Query")
