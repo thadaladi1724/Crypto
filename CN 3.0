@@ -1,0 +1,533 @@
+───────────────────────────────────────────────────────────────────────────────────
+SECTION 1: TCP PROGRAMS
+───────────────────────────────────────────────────────────────────────────────────
+1.1 TCP ECHO SERVER & CLIENT
+1.1a tcp_echo_server.py
+import socket
+
+def echo_message(data):
+    return data
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(('', 9999))
+s.listen(5)
+print("TCP Echo Server Running on port 9999...")
+while True:
+    c, addr = s.accept()
+    print("Connected:", addr)
+    while True:
+        data = c.recv(1024).decode()
+        if not data or data.lower() == "exit": break
+        response = echo_message(data)
+        c.send(response.encode())
+    c.close()
+1.1b tcp_echo_client.py
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(('YOUR_IP_HERE', 9999))
+print("Connected! Type 'exit' to quit")
+while True:
+    msg = input("You → ")
+    s.send(msg.encode())
+    if msg.lower() == "exit": break
+    print("Server →", s.recv(1024).decode())
+s.close()
+───────────────────────────────────────────────────────────────────────────────────
+1.2 TCP TIME SERVER & CLIENT
+1.2a tcp_time_server.py
+import socket
+from datetime import datetime
+
+def get_current_time():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(('', 9999))
+s.listen(5)
+print("TCP Time Server Running...")
+while True:
+    c, addr = s.accept()
+    time_str = get_current_time()
+    c.send(time_str.encode())
+    c.close()
+1.2b tcp_time_client.py
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(('YOUR_IP_HERE', 9999))
+print("Server Time:", s.recv(1024).decode())
+s.close()
+───────────────────────────────────────────────────────────────────────────────────
+1.3 TCP FIBONACCI SERVER & CLIENT
+1.3a tcp_fib_server.py
+import socket
+
+def compute_fib(n):
+    if n <= 0: return 0
+    a, b = 0, 1
+    for _ in range(n):
+        a, b = b, a + b
+    return a
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(('', 9999))
+s.listen(5)
+print("TCP Fibonacci Server Ready...")
+while True:
+    c, addr = s.accept()
+    n = int(c.recv(1024).decode())
+    fib_result = compute_fib(n)
+    c.send(str(fib_result).encode())
+    c.close()
+1.3b tcp_fib_client.py
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(('YOUR_IP_HERE', 9999))
+n = input("Enter n for Fibonacci: ")
+s.send(n.encode())
+print("Fibonacci =", s.recv(1024).decode())
+s.close()
+───────────────────────────────────────────────────────────────────────────────────
+1.4 TCP PRIME NUMBER SERVER & CLIENT
+1.4a tcp_prime_server.py
+import socket
+
+def check_prime(n):
+    if n < 2: return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0: return False
+    return True
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(('', 9999))
+s.listen(5)
+print("TCP Prime Server Running...")
+while True:
+    c, addr = s.accept()
+    n = int(c.recv(1024).decode())
+    is_prime = check_prime(n)
+    result = "Prime" if is_prime else "Not Prime"
+    c.send(result.encode())
+    c.close()
+1.4b tcp_prime_client.py
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(('YOUR_IP_HERE', 9999))
+n = input("Enter number: ")
+s.send(n.encode())
+print(n, "is", s.recv(1024).decode())
+s.close()
+───────────────────────────────────────────────────────────────────────────────────
+1.5 TCP SORTING SERVER & CLIENT
+1.5a tcp_sort_server.py
+import socket
+
+def sort_numbers(nums_list):
+    return sorted(nums_list)
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(('', 9999))
+s.listen(5)
+print("TCP Sorting Server Ready...")
+while True:
+    c, addr = s.accept()
+    nums_str = c.recv(1024).decode()
+    nums = list(map(int, nums_str.split()))
+    sorted_nums = sort_numbers(nums)
+    c.send(' '.join(map(str, sorted_nums)).encode())
+    c.close()
+1.5b tcp_sort_client.py
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(('YOUR_IP_HERE', 9999))
+nums = input("Enter numbers (space separated): ")
+s.send(nums.encode())
+print("Sorted →", s.recv(1024).decode())
+s.close()
+───────────────────────────────────────────────────────────────────────────────────
+1.6 TCP CHAT SERVER & CLIENT
+1.6a tcp_chat_server.py
+import socket
+
+def handle_chat(data):
+    return data  # Just relay for now
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(('', 9999))
+s.listen(1)
+print("Chat Server Waiting...")
+c, addr = s.accept()
+print("Client Connected:", addr)
+while True:
+    msg = c.recv(1024).decode()
+    if not msg or msg == "bye": break
+    print("Client:", msg)
+    reply = input("Server: ")
+    c.send(reply.encode())
+c.close()
+1.6b tcp_chat_client.py
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(('YOUR_IP_HERE', 9999))
+while True:
+    msg = input("You: ")
+    s.send(msg.encode())
+    if msg == "bye": break
+    print("Server:", s.recv(1024).decode())
+s.close()
+───────────────────────────────────────────────────────────────────────────────────
+1.7 TCP FILE TRANSFER SERVER & CLIENT
+1.7a tcp_file_server.py
+import socket
+
+def save_file(filename, data):
+    with open("received_" + filename, "wb") as f:
+        f.write(data)
+    return True
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(('', 9999))
+s.listen(1)
+print("File Server Waiting...")
+c, addr = s.accept()
+print("Connected:", addr)
+filename = c.recv(1024).decode()
+file_data = c.recv(1024*1024)
+save_file(filename, file_data)
+print("File Received:", filename)
+c.close()
+1.7b tcp_file_client.py
+import socket
+import os
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(('YOUR_IP_HERE', 9999))
+file_path = input("Enter filename to send: ")
+filename = os.path.basename(file_path)
+s.send(filename.encode())
+with open(file_path, "rb") as f:
+    s.send(f.read())
+print("File Sent!")
+s.close()
+───────────────────────────────────────────────────────────────────────────────────
+1.8 TCP CALCULATOR SERVER & CLIENT
+1.8a tcp_calc_server.py
+import socket
+
+def calculate_expression(expr):
+    try:
+        return eval(expr)
+    except:
+        return "Error"
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(('', 9999))
+s.listen(5)
+print("TCP Calculator Server Running...")
+while True:
+    c, addr = s.accept()
+    expr = c.recv(1024).decode()
+    result = calculate_expression(expr)
+    c.send(str(result).encode())
+    c.close()
+1.8b tcp_calc_client.py
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(('YOUR_IP_HERE', 9999))
+expr = input("Enter expression (e.g. 12+34*2): ")
+s.send(expr.encode())
+print("Result =", s.recv(1024).decode())
+s.close()
+───────────────────────────────────────────────────────────────────────────────────
+SECTION 2: UDP PROGRAMS
+───────────────────────────────────────────────────────────────────────────────────
+2.1 UDP ECHO SERVER & CLIENT
+2.1a udp_echo_server.py
+import socket
+
+def echo_message(data):
+    return data
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.bind(('', 9999))
+print("UDP Echo Server Running...")
+while True:
+    data, addr = s.recvfrom(1024)
+    if data.decode().lower() == "exit": continue
+    response = echo_message(data)
+    s.sendto(response, addr)
+2.1b udp_echo_client.py
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+ip = 'YOUR_IP_HERE'
+while True:
+    msg = input("You → ")
+    s.sendto(msg.encode(), (ip, 9999))
+    if msg.lower() == "exit": break
+    reply, _ = s.recvfrom(1024)
+    print("Server →", reply.decode())
+───────────────────────────────────────────────────────────────────────────────────
+2.2 UDP TIME SERVER & CLIENT
+2.2a udp_time_server.py
+import socket
+from datetime import datetime
+
+def get_current_time():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.bind(('', 9999))
+print("UDP Time Server Running...")
+while True:
+    _, addr = s.recvfrom(1024)
+    time_str = get_current_time()
+    s.sendto(time_str.encode(), addr)
+2.2b udp_time_client.py
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.sendto(b"request_time", ('YOUR_IP_HERE', 9999))
+time, _ = s.recvfrom(1024)
+print("Server Time:", time.decode())
+───────────────────────────────────────────────────────────────────────────────────
+2.3 UDP FIBONACCI SERVER & CLIENT
+2.3a udp_fib_server.py
+import socket
+
+def compute_fib(n):
+    if n <= 0: return 0
+    a, b = 0, 1
+    for _ in range(n):
+        a, b = b, a + b
+    return a
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.bind(('', 9999))
+print("UDP Fibonacci Server Ready...")
+while True:
+    data, addr = s.recvfrom(1024)
+    n = int(data.decode())
+    fib_result = compute_fib(n)
+    s.sendto(str(fib_result).encode(), addr)
+2.3b udp_fib_client.py
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+ip = 'YOUR_IP_HERE'
+n = input("Enter n for Fibonacci: ")
+s.sendto(n.encode(), (ip, 9999))
+result, _ = s.recvfrom(1024)
+print("Fibonacci =", result.decode())
+───────────────────────────────────────────────────────────────────────────────────
+2.4 UDP PRIME NUMBER SERVER & CLIENT
+2.4a udp_prime_server.py
+import socket
+
+def check_prime(n):
+    if n < 2: return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0: return False
+    return True
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.bind(('', 9999))
+print("UDP Prime Server Running...")
+while True:
+    data, addr = s.recvfrom(1024)
+    n = int(data.decode())
+    is_prime = check_prime(n)
+    result = "Prime" if is_prime else "Not Prime"
+    s.sendto(result.encode(), addr)
+2.4b udp_prime_client.py
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+ip = 'YOUR_IP_HERE'
+n = input("Enter number: ")
+s.sendto(n.encode(), (ip, 9999))
+reply, _ = s.recvfrom(1024)
+print(n, "is", reply.decode())
+───────────────────────────────────────────────────────────────────────────────────
+2.5 UDP SORTING SERVER & CLIENT
+2.5a udp_sort_server.py
+import socket
+
+def sort_numbers(nums_list):
+    return sorted(nums_list)
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.bind(('', 9999))
+print("UDP Sorting Server Ready...")
+while True:
+    data, addr = s.recvfrom(1024)
+    nums_str = data.decode()
+    nums = list(map(int, nums_str.split()))
+    sorted_nums = sort_numbers(nums)
+    s.sendto(' '.join(map(str, sorted_nums)).encode(), addr)
+2.5b udp_sort_client.py
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+ip = 'YOUR_IP_HERE'
+nums = input("Enter numbers (space separated): ")
+s.sendto(nums.encode(), (ip, 9999))
+sorted_str, _ = s.recvfrom(1024)
+print("Sorted →", sorted_str.decode())
+───────────────────────────────────────────────────────────────────────────────────
+2.6 UDP CALCULATOR SERVER & CLIENT
+2.6a udp_calc_server.py
+import socket
+
+def calculate_expression(expr):
+    try:
+        return eval(expr)
+    except:
+        return "Error"
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.bind(('', 9999))
+print("UDP Calculator Server Running...")
+while True:
+    data, addr = s.recvfrom(1024)
+    expr = data.decode()
+    result = calculate_expression(expr)
+    s.sendto(str(result).encode(), addr)
+2.6b udp_calc_client.py
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+ip = 'YOUR_IP_HERE'
+expr = input("Enter expression (e.g. 12+34*2): ")
+s.sendto(expr.encode(), (ip, 9999))
+result, _ = s.recvfrom(1024)
+print("Result =", result.decode())
+───────────────────────────────────────────────────────────────────────────────────
+SECTION 3: XML-RPC PROGRAMS
+───────────────────────────────────────────────────────────────────────────────────
+3.1 XML-RPC ADD SERVER & CLIENT
+3.1a xml_add_server.py
+from xmlrpc.server import SimpleXMLRPCServer
+
+def add_numbers(x, y):
+    return x + y
+
+server = SimpleXMLRPCServer(('', 9999))
+server.register_function(add_numbers, "add")
+print("XML-RPC Add Server Running...")
+server.serve_forever()
+3.1b xml_add_client.py
+import xmlrpc.client
+
+proxy = xmlrpc.client.ServerProxy("http://YOUR_IP_HERE:9999")
+a = int(input("Enter a: "))
+b = int(input("Enter b: "))
+print("Sum =", proxy.add(a, b))
+───────────────────────────────────────────────────────────────────────────────────
+3.2 XML-RPC FIBONACCI SERVER & CLIENT
+3.2a xml_fib_server.py
+from xmlrpc.server import SimpleXMLRPCServer
+
+def compute_fib(n):
+    if n <= 0: return 0
+    a, b = 0, 1
+    for _ in range(n):
+        a, b = b, a + b
+    return a
+
+server = SimpleXMLRPCServer(('', 9999))
+server.register_function(compute_fib, "fib")
+print("XML-RPC Fibonacci Server Running...")
+server.serve_forever()
+3.2b xml_fib_client.py
+import xmlrpc.client
+
+proxy = xmlrpc.client.ServerProxy("http://YOUR_IP_HERE:9999")
+n = int(input("Enter n: "))
+print("Fibonacci =", proxy.fib(n))
+───────────────────────────────────────────────────────────────────────────────────
+3.3 XML-RPC PRIME SERVER & CLIENT
+3.3a xml_prime_server.py
+from xmlrpc.server import SimpleXMLRPCServer
+
+def check_prime(n):
+    if n < 2: return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0: return False
+    return True
+
+server = SimpleXMLRPCServer(('', 9999))
+server.register_function(check_prime, "prime")
+print("XML-RPC Prime Server Running...")
+server.serve_forever()
+3.3b xml_prime_client.py
+import xmlrpc.client
+
+proxy = xmlrpc.client.ServerProxy("http://YOUR_IP_HERE:9999")
+n = int(input("Enter number: "))
+print("Is Prime?", proxy.prime(n))
+───────────────────────────────────────────────────────────────────────────────────
+3.4 XML-RPC SORTING SERVER & CLIENT
+3.4a xml_sort_server.py
+from xmlrpc.server import SimpleXMLRPCServer
+
+def sort_numbers(nums_list):
+    return sorted(nums_list)
+
+server = SimpleXMLRPCServer(('', 9999))
+server.register_function(sort_numbers, "sort")
+print("XML-RPC Sorting Server Running...")
+server.serve_forever()
+3.4b xml_sort_client.py
+import xmlrpc.client
+
+proxy = xmlrpc.client.ServerProxy("http://YOUR_IP_HERE:9999")
+nums_str = input("Enter numbers (space separated): ")
+nums = list(map(int, nums_str.split()))
+print("Sorted =", proxy.sort(nums))
+───────────────────────────────────────────────────────────────────────────────────
+3.5 XML-RPC ALL-IN-ONE CALCULATOR SERVER & CLIENT (Add + Fib + Prime + Sort)
+3.5a xml_calc_server.py
+from xmlrpc.server import SimpleXMLRPCServer
+
+def add_numbers(x, y):
+    return x + y
+
+def compute_fib(n):
+    if n <= 0: return 0
+    a, b = 0, 1
+    for _ in range(n):
+        a, b = b, a + b
+    return a
+
+def check_prime(n):
+    if n < 2: return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0: return False
+    return True
+
+def sort_numbers(nums_list):
+    return sorted(nums_list)
+
+server = SimpleXMLRPCServer(('', 9999))
+server.register_function(add_numbers, "add")
+server.register_function(compute_fib, "fib")
+server.register_function(check_prime, "prime")
+server.register_function(sort_numbers, "sort")
+print("XML-RPC Calculator Server Running...")
+server.serve_forever()
+3.5b xml_calc_client.py
+import xmlrpc.client
+
+proxy = xmlrpc.client.ServerProxy("http://YOUR_IP_HERE:9999")
+print("Add 10+20 =", proxy.add(10, 20))
+print("Fib(10) =", proxy.fib(10))
+print("Prime 17?", proxy.prime(17))
+print("Sort [5,2,9] =", proxy.sort([5, 2, 9]))
+───────────────────────────────────────────────────────────
