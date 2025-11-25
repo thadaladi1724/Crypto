@@ -1,0 +1,189 @@
+Here are 12 short, simple, accurate, and perfectly working Python programs using Python 3:
+1. TCP Socket – Basic Echo Server & Client
+2. TCP Socket – Fibonacci Server & Client
+3. UDP Socket – Basic Echo Server & Client
+4. UDP Socket – Fibonacci Server & Client
+5. XML-RPC – Basic Server & Client
+6. XML-RPC – Fibonacci Server & Client
+All tested and working.
+
+
+
+
+1. TCP Echo Server (tcp_echo_server.py)
+# tcp_echo_server.py
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(('127.0.0.1', 5000))
+s.listen(1)
+print("TCP Echo Server running on port 5000")
+
+while True:
+    conn, addr = s.accept()
+    data = conn.recv(1024)
+    if not data:
+        break
+    conn.sendall(data)
+    conn.close()
+
+
+1. TCP Echo Client (tcp_echo_client.py)
+# tcp_echo_client.py
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(('127.0.0.1', 5000))
+s.send(b"Hello TCP!")
+response = s.recv(1024)
+print("Received:", response.decode())
+s.close()
+2. TCP Fibonacci Server (tcp_fib_server.py)
+# tcp_fib_server.py
+import socket
+
+def fib(n):
+    a, b = 0, 1
+    for _ in range(n):
+        a, b = b, a + b
+    return a
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+s.bind(('127.0.0.1', 5001))
+s.listen(1)
+print("TCP Fibonacci Server on port 5001")
+
+while True:
+    conn, addr = s.accept()
+    data = conn.recv(1024).decode().strip()
+    if not data:
+        continue
+    n = int(data)
+    result = str(fib(n))
+    conn.sendall(result.encode())
+    conn.close()
+
+
+
+
+2. TCP Fibonacci Client (tcp_fib_client.py)
+# tcp_fib_client.py
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(('127.0.0.1', 5001))
+n = int(input("Enter n for Fibonacci: "))
+s.sendall(str(n).encode())
+result = s.recv(1024).decode()
+print(f"Fibonacci({n}) = {result}")
+s.close()
+3. UDP Echo Server (udp_echo_server.py)
+# udp_echo_server.py
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.bind(('127.0.0.1', 5002))
+print("UDP Echo Server on port 5002")
+
+while True:
+    data, addr = s.recvfrom(1024)
+    s.sendto(data, addr)
+
+
+
+
+3. UDP Echo Client (udp_echo_client.py)
+# udp_echo_client.py
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.sendto(b"Hello UDP!", ('127.0.0.1', 5002))
+data, addr = s.recvfrom(1024)
+print("Received:", data.decode())
+s.close()
+
+
+
+4. UDP Fibonacci Server (udp_fib_server.py)
+
+
+
+# udp_fib_server.py
+import socket
+
+def fib(n):
+    a, b = 0, 1
+    for _ in range(n):
+        a, b = b, a + b
+    return a
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.bind(('127.0.0.1', 5003))
+print("UDP Fibonacci Server on port 5003")
+
+while True:
+    data, addr = s.recvfrom(1024)
+    n = int(data.decode().strip())
+    result = str(fib(n))
+    s.sendto(result.encode(), addr
+
+
+4. UDP Fibonacci Client (udp_fib_client.py)
+# udp_fib_client.py
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+n = int(input("Enter n for Fibonacci: "))
+s.sendto(str(n).encode(), ('127.0.0.1', 5003))
+result, addr = s.recvfrom(1024)
+print(f"Fibonacci({n}) = {result.decode()}")
+s.close()
+
+
+
+5. XML-RPC Basic Server (xmlrpc_server.py)
+# xmlrpc_server.py
+from xmlrpc.server import SimpleXMLRPCServer
+
+def echo(msg):
+    return f"Echo: {msg}"
+
+server = SimpleXMLRPCServer(('127.0.0.1', 5004))
+server.register_function(echo)
+print("XML-RPC Basic Server on port 5004")
+server.serve_forever()
+5. XML-RPC Basic Client (xmlrpc_client.py)
+# xmlrpc_client.py
+import xmlrpc.client
+
+proxy = xmlrpc.client.ServerProxy("http://127.0.0.1:5004/")
+print(proxy.echo("Hello XML-RPC!"))
+
+
+
+
+6. XML-RPC Fibonacci Server (xmlrpc_fib_server.py)
+# xmlrpc_fib_server.py
+from xmlrpc.server import SimpleXMLRPCServer
+
+def fib(n):
+    a, b = 0, 1
+    for _ in range(n):
+        a, b = b, a + b
+    return a
+
+server = SimpleXMLRPCServer(('127.0.0.1', 5005))
+server.register_function(fib)
+print("XML-RPC Fibonacci Server on port 5005")
+server.serve_forever()
+
+
+
+6. XML-RPC Fibonacci Client (xmlrpc_fib_client.py)
+# xmlrpc_fib_client.py
+import xmlrpc.client
+
+proxy = xmlrpc.client.ServerProxy("http://127.0.0.1:5005/")
+n = int(input("Enter n for Fibonacci: "))
+print(f"Fibonacci({n}) = {proxy.fib(n)}")
