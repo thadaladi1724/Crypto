@@ -18,3 +18,34 @@ for i in range(start, end+1):
         print(f"[-] {ip}  → No Anonymous FTP or Service Down")
 
 print("\nScan Complete!")
+
+
+
+
+
+
+
+
+
+
+import ftplib
+
+print("=== Anonymous FTP Scanner ===")
+network = input("Enter network (e.g., 192.168.1): ")
+start = int(input("Start host (1-254): "))
+end = int(input("End host (1-254): "))
+
+print("\nScanning for Anonymous FTP Login Allowed...\n")
+
+for i in range(start, end + 1):
+    ip = f"{network}.{i}"
+    try:
+        ftp = ftplib.FTP()
+        ftp.connect(ip, 21, timeout=4)
+        ftp.login("anonymous", "")
+        print(f"[+] {ip} → ANONYMOUS FTP ALLOWED")
+        ftp.quit()
+    except Exception:
+        print(f"[-] {ip} → No Anonymous FTP or Service Down")
+
+print("\nScan Complete!")
